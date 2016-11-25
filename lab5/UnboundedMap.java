@@ -18,7 +18,7 @@ public class UnboundedMap extends AbstractWorldMap {
     public String toString(){
         int east = Integer.MAX_VALUE, west = Integer.MIN_VALUE, north = Integer.MIN_VALUE, south = Integer.MAX_VALUE;
 
-        for(Car car : this.cars){
+        for(Car car : this.cars.values()){
             int carX = car.getPosition().x, carY = car.getPosition().y;
 
             if(carX < east)
@@ -51,7 +51,7 @@ public class UnboundedMap extends AbstractWorldMap {
 
     @Override
     public Object objectAt(Position position) {
-        for(Car car : this.cars){
+        for(Car car : this.cars.values()){
             if(car.getPosition().equals(position))
                 return car;
         }

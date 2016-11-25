@@ -4,45 +4,53 @@ import agh.cs.lab3.Car;
 import agh.cs.lab3.MoveDirection;
 import agh.cs.lab3.Position;
 import agh.cs.lab4.IWorldMap;
+import agh.cs.lab6.IPositionChangeObserver;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-public abstract class AbstractWorldMap implements IWorldMap {
+public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
 
-    //List<Car> cars = new ArrayList<>();
-    Map<Position, Car> cars = new HashMap<>();
+    protected List<Car> carsList = new ArrayList<>();
+    protected Map<Position, Car> cars = new HashMap<>();
 
     public boolean canMoveTo(Position position) {
         return !this.isOccupied(position);
     }
 
     public boolean add(Car car) {
-        if(!this.canMoveTo(car.getPosition()))
+        if (!this.canMoveTo(car.getPosition()))
             throw new IllegalArgumentException(car.getPosition() + " is occupied");
-        return this.cars.add(car);
+        this.cars.put(car.getPosition(), car);
+        this.cars.get(car.getPosition()).addListener(this);
+        return true;
     }
 
 
     public void run(MoveDirection[] directions) {
-        for(int i=0; i < directions.length; i++){
-            cars.get(i % cars.size()).move(directions[i]);
+        for (int i = 0; i < directions.length;) {
+            int k = i;
+            for (Car car : this.cars.values()) {
+                car.move(directions[k]);
+                k++;
+            }
+            i += this.cars.size();
         }
     }
 
 
     public boolean isOccupied(Position position) {
-        if(this.objectAt(position) != null)
+        if (this.objectAt(position) != null)
             return true;
         return false;
     }
 
 
     public Object objectAt(Position position) {
-        for(Car car : this.cars){
-            if(car.getPosition().equals(position))
-                return car;
-        }
-        return null;
+        return this.cars.get(position);
+    }
+
+    public void positionChanged(Position old, Position newPosition){
+        Car car = this.cars.remove(old);
+        this.cars.put(newPosition, car);
     }
 }

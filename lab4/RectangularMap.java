@@ -18,4 +18,5 @@ public class RectangularMap extends AbstractWorldMap {
         MapVisualizer p = new MapVisualizer();
         return p.dump(this, this.mapStart, this.mapEnd);
     }
+
 }
