@@ -13,6 +13,8 @@ public class FileParser {
 
     public Constitution parse(String filePath) throws IOException {
         Constitution result = new Constitution();
+        ConstitutionCreator creator = new ConstitutionCreator();
+
         List<Chapter> pChapters = new ArrayList<>();
         List<Article> pArticles = new ArrayList<>();
 
@@ -27,7 +29,7 @@ public class FileParser {
         int chapCount = 0;
 
         do {
-            if(textLine.length() < 2){
+            if (textLine.length() < 2) {
                 textLine = bufferedReader.readLine();
                 continue;
             }
@@ -37,11 +39,8 @@ public class FileParser {
                 continue;
             }
             if (textLine.contains("Rozdzia")) {
-                Article a = new Article(artCount, articlePoints.toString());
-                pArticles.add(a);
-                Chapter c = new Chapter(chapCount, pArticles);
-                pChapters.add(c);
-
+                creator.joinArticleToList(artCount, pArticles, articlePoints);
+                creator.joinChapterToList(chapCount, pArticles, pChapters);
                 chapCount++;
 
                 pArticles = new ArrayList<Article>();
@@ -54,8 +53,7 @@ public class FileParser {
             } else {
                 if (textLine.contains("Art. ")) {
                     artCount++;
-                    Article a = new Article(artCount, articlePoints.toString());
-                    pArticles.add(a);
+                    creator.joinArticleToList(artCount, pArticles, articlePoints);
 
                     articlePoints = new StringBuilder();
                     articlePoints.append("\n" + textLine);
@@ -68,6 +66,9 @@ public class FileParser {
             }
 
         } while (textLine != null);
+        creator.joinArticleToList((artCount+1),pArticles, articlePoints);
+        creator.joinChapterToList(chapCount, pArticles, pChapters);
+
         result.chapters = pChapters;
         bufferedReader.close();
         return result;
