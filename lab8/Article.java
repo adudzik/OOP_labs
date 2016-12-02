@@ -5,11 +5,13 @@ package agh.cs.lab8;
  */
 public class Article {
     private int articleNumber;
+    private String chapterSubtitle;
     private String articlePoints;
 
-    public Article(int n, String s){
+    public Article(int n, String s, String t){
         this.articleNumber = n;
         this.articlePoints = s;
+        this.chapterSubtitle = t;
     }
 
     public int getArticleNumber(){
@@ -18,5 +20,9 @@ public class Article {
 
     public String getArticlePoints(){
         return this.articlePoints;
+    }
+
+    public String getChapterSubtitle(){
+        return this.chapterSubtitle;
     }
 }
