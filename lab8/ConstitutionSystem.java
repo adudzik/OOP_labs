@@ -1,6 +1,7 @@
 package agh.cs.lab8;
 
 import java.io.IOException;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Created by Arek on 2016-12-01.
@@ -8,21 +9,13 @@ import java.io.IOException;
 public class ConstitutionSystem {
     public static void main(String[] args) {
         try {
-            Constitution constPl = new ConstitutionCreator().create("F:/konstytucja.txt");
-            int l = constPl.chapters.get(0).getFirstArticleNumber();
-            System.out.println(constPl.chapters.get(0).articles.get(0).getArticlePoints());
-        } catch (IOException err) {
-            System.out.println(err);
-        }/*
-
-        String text = new String("A");
-        String regexp = "[A-Z][A-Z]";
-
-        Pattern pattern = Pattern.compile(regexp);
-        Matcher matcher = pattern.matcher(text);
-
-        System.out.println(matcher.find());
-        System.out.println(matcher.matches());
-     */
+            new ConstitutionPrinter().printWhatUserWant(args);
+            //} catch (IOException err) {
+            //  System.out.println(err + " bufferedReader throws a kind off IOException");
+        } catch (PatternSyntaxException err) {
+            System.out.println(err + " pattern has a kind of syntax error");
+        } catch (IllegalArgumentException err) {
+            System.out.println(err.getMessage());
+        }
     }
 }

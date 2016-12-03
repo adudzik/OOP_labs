@@ -19,7 +19,7 @@ public class FileParser {
     private ConstitutionCreator creator = new ConstitutionCreator();
     private Matcher matcher;
 
-    public List<Chapter> parse(String filePath) throws IOException {
+    public List<Chapter> parse(String filePath) throws IOException, PatternSyntaxException {
         List<Chapter> pChapters = new ArrayList<>();
         List<Article> pArticles = new ArrayList<>();
 
@@ -27,7 +27,7 @@ public class FileParser {
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         this.textLine = new String();
 
-        StringBuilder articlePoints = new StringBuilder(textLine);
+        StringBuilder articlePoints = new StringBuilder(this.textLine);
         String chtSubTitle = new String("brak");
         String chapTitle = new String("brak");
 
@@ -42,8 +42,8 @@ public class FileParser {
             }
 
             if (this.findMatch("Rozdzia")) {
-                creator.joinArticleToList(artCount, articlePoints, chtSubTitle, pArticles);
-                creator.joinChapterToList(chapCount, chapTitle, pArticles, pChapters);
+                this.creator.joinArticleToList(artCount, articlePoints, chtSubTitle, pArticles);
+                this.creator.joinChapterToList(chapCount, chapTitle, pArticles, pChapters);
                 chapCount++;
 
                 chtSubTitle = "brak";
@@ -65,7 +65,7 @@ public class FileParser {
 
             if (this.findMatch("Art. ")) {
                 artCount++;
-                creator.joinArticleToList(artCount, articlePoints, chtSubTitle, pArticles);
+                this.creator.joinArticleToList(artCount, articlePoints, chtSubTitle, pArticles);
 
                 articlePoints = new StringBuilder();
             }
@@ -74,10 +74,10 @@ public class FileParser {
                 this.deleteAndConcat(bufferedReader);
             this.addAndSet(bufferedReader, articlePoints);
 
-        } while (textLine != null);
+        } while (this.textLine != null);
 
-        creator.joinArticleToList((artCount + 1), articlePoints, chtSubTitle, pArticles);
-        creator.joinChapterToList(chapCount, chapTitle, pArticles, pChapters);
+        this.creator.joinArticleToList((artCount + 1), articlePoints, chtSubTitle, pArticles);
+        this.creator.joinChapterToList(chapCount, chapTitle, pArticles, pChapters);
 
         bufferedReader.close();
 
@@ -85,13 +85,14 @@ public class FileParser {
     }
 
     private boolean hasUselessLine() {
-        return (textLine.length() < 2 || this.findMatch("Kancelaria") || this.findMatch("2009-"));
+        return (this.textLine.length() < 2 || this.findMatch("Kancelaria") || this.findMatch("2009-"));
     }
 
     private void addAndSet(BufferedReader bReader, StringBuilder article) throws IOException {
         article.append("\n" + this.textLine);
         this.textLine = bReader.readLine();
     }
+
 
     private boolean findMatch(String regexp) throws PatternSyntaxException {
         Pattern pattern = Pattern.compile(regexp);
