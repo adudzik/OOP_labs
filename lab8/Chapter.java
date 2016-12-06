@@ -23,6 +23,10 @@ class Chapter {
         return this.articles;
     }
 
+    int getChapterNumber(){
+        return this.chapterNumber;
+    }
+
     int getFirstArticleNumber() {
         return this.articles.get(0).getArticleNumber();
     }

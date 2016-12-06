@@ -8,9 +8,11 @@ import java.util.List;
  * Created by Arek on 2016-12-01.
  */
 public class Constitution {
-
-     private String title = "KONSTYTUCJA \nRZECZYPOSPOLITEJ POLSKIEJ";
      private List<Chapter> chapters = new ArrayList<>();
+
+     List<Chapter> getChaptersList(){
+          return this.chapters;
+     }
 
      Chapter getChapter(int i){
           return this.chapters.get(i);

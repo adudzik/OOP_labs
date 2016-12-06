@@ -27,11 +27,11 @@ class FileParser {
         FileReader fileReader = new FileReader(filePath);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
 
-        this.textLine = new String();
+        this.textLine = "";
         StringBuilder articlePoints = new StringBuilder(this.textLine);
         StringBuilder chSubTitle = new StringBuilder();
         StringBuilder chapTitle = new StringBuilder();
-        String prevSubTitle = new String();
+
 
         int artCount = 0;
         int chapCount = 0;
@@ -76,20 +76,23 @@ class FileParser {
             }
 
             if (this.findMatch("Art. ")) {
+                if (!(articlePoints.toString().isEmpty()))
+                    this.joinArticleToList(artCount, articlePoints, chSubTitle.toString(), pArticles);
                 artCount++;
-                this.joinArticleToList(artCount, articlePoints, chSubTitle.toString(), pArticles);
-
                 articlePoints = new StringBuilder();
             }
 
-            if (this.textLine.endsWith("-"))
+            if (this.textLine.endsWith("-")) {
                 this.deleteAndConcat(bufferedReader);
+                continue;
+            }
 
             this.addAndSet(bufferedReader, articlePoints);
 
         } while (this.textLine != null);
 
-        this.joinArticleToList((artCount + 1), articlePoints, chSubTitle.toString(), pArticles);
+        artCount++;
+        this.joinArticleToList(artCount, articlePoints, chSubTitle.toString(), pArticles);
         this.joinChapterToList(chapCount, chapTitle.toString(), pArticles, pChapters);
 
         bufferedReader.close();

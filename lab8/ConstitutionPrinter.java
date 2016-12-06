@@ -14,15 +14,19 @@ class ConstitutionPrinter {
         OptionParser oP = new OptionParser().getUserOptions(args);
         Constitution constitution = new FileParser().parse(oP.getPath());
 
-        //System.out.println(constitution.getChapter(2).getArticles().get(8).getChapterSubtitle());
-
-        if (oP.getPrintType() == 'a')
-            this.printArticles(oP.getContentToPrint(), constitution);
-        else
+        if (oP.getPrintType() == 'r')
             this.printChapter(oP.getContentToPrint().get(0), constitution);
+        else if (oP.getContentToPrint().size() == 1)
+            this.printSingleArticle(oP.getContentToPrint().get(0), constitution);
+        else
+            this.printArticles(oP.getContentToPrint(), constitution);
+
     }
 
     private void printChapter(Integer num, Constitution constitution) {
+        if (num < 0 || num > 13)
+            throw new IllegalArgumentException(" This chapter (" + num + ") does not exist. Constitution has got 13 chapters.");
+
         Chapter chapter = constitution.getChapter(num);
         List<Article> articles = chapter.getArticles();
         String prevTitle = articles.get(0).getChapterSubtitle();
@@ -40,7 +44,37 @@ class ConstitutionPrinter {
         }
     }
 
+    private void printSingleArticle(Integer num, Constitution constitution){
+        if(num<0 || num > 243)
+            throw new IllegalArgumentException(" This article (" + num + ") does not exist. Constitution has got 243 articles!");
+
+        if(num == 0){
+            printChapter(num, constitution);
+            return;
+        }
+
+        int chaptNumber ;
+
+        for(Chapter chapter : constitution.getChaptersList()){
+            if(chapter.getFirstArticleNumber()> num) {
+                chaptNumber = chapter.getChapterNumber() - 1;
+                for(Article art : constitution.getChapter(chaptNumber).getArticles()){
+                    if(art.getArticleNumber() == num){
+                        System.out.println(art.getArticlePoints());
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+    }
+
     private void printArticles(List<Integer> content, Constitution constitution) {
+        if(content.get(0)<0 || content.get(1)<0 || content.get(0)>243 || content.get(1)>243)
+            throw new IllegalArgumentException("You can print article only from 0 to 243!");
+
+        for(int i = content.get(0); i<=content.get(1); i++)
+            printSingleArticle(i, constitution);
 
     }
 }
