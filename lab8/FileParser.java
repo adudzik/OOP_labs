@@ -11,25 +11,27 @@ import java.util.regex.PatternSyntaxException;
 
 
 /**
+ * This class transform file text to object form
+ * and delete useless lines from file
  * Created by Arek on 2016-12-01.
  */
-public class FileParser {
+class FileParser {
 
     private String textLine;
-    private ConstitutionCreator creator = new ConstitutionCreator();
-    private Matcher matcher;
 
-    public List<Chapter> parse(String filePath) throws IOException, PatternSyntaxException {
+    Constitution parse(String filePath) throws IOException, PatternSyntaxException {
+        Constitution result = new Constitution();
         List<Chapter> pChapters = new ArrayList<>();
         List<Article> pArticles = new ArrayList<>();
 
         FileReader fileReader = new FileReader(filePath);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
-        this.textLine = new String();
 
+        this.textLine = new String();
         StringBuilder articlePoints = new StringBuilder(this.textLine);
-        String chtSubTitle = new String("brak");
-        String chapTitle = new String("brak");
+        StringBuilder chSubTitle = new StringBuilder();
+        StringBuilder chapTitle = new StringBuilder();
+        String prevSubTitle = new String();
 
         int artCount = 0;
         int chapCount = 0;
@@ -42,46 +44,57 @@ public class FileParser {
             }
 
             if (this.findMatch("Rozdzia")) {
-                this.creator.joinArticleToList(artCount, articlePoints, chtSubTitle, pArticles);
-                this.creator.joinChapterToList(chapCount, chapTitle, pArticles, pChapters);
+                this.joinArticleToList(artCount, articlePoints, chSubTitle.toString(), pArticles);
+                this.joinChapterToList(chapCount, chapTitle.toString(), pArticles, pChapters);
                 chapCount++;
 
-                chtSubTitle = "brak";
+                chSubTitle = new StringBuilder("");
+                chapTitle = new StringBuilder(this.textLine);
                 isChapterTitle = 0;
 
                 pArticles = new ArrayList<>();
 
+
                 articlePoints = new StringBuilder();
+                this.textLine = bufferedReader.readLine();
+                continue;
+
             }
 
             if (this.findMatch("[^XI ][A-Z][A-Z]")) {
                 if (isChapterTitle == 0) {
-                    chapTitle = this.textLine;
+                    chapTitle.append("\n");
+                    chapTitle.append(this.textLine);
                     isChapterTitle++;
                 } else {
-                    chtSubTitle = this.textLine;
+
+                    chSubTitle = new StringBuilder(this.textLine);
+
                 }
+                this.textLine = bufferedReader.readLine();
+                continue;
             }
 
             if (this.findMatch("Art. ")) {
                 artCount++;
-                this.creator.joinArticleToList(artCount, articlePoints, chtSubTitle, pArticles);
+                this.joinArticleToList(artCount, articlePoints, chSubTitle.toString(), pArticles);
 
                 articlePoints = new StringBuilder();
             }
 
             if (this.textLine.endsWith("-"))
                 this.deleteAndConcat(bufferedReader);
+
             this.addAndSet(bufferedReader, articlePoints);
 
         } while (this.textLine != null);
 
-        this.creator.joinArticleToList((artCount + 1), articlePoints, chtSubTitle, pArticles);
-        this.creator.joinChapterToList(chapCount, chapTitle, pArticles, pChapters);
+        this.joinArticleToList((artCount + 1), articlePoints, chSubTitle.toString(), pArticles);
+        this.joinChapterToList(chapCount, chapTitle.toString(), pArticles, pChapters);
 
         bufferedReader.close();
-
-        return pChapters;
+        result.setChapters(pChapters);
+        return result;
     }
 
     private boolean hasUselessLine() {
@@ -89,19 +102,29 @@ public class FileParser {
     }
 
     private void addAndSet(BufferedReader bReader, StringBuilder article) throws IOException {
-        article.append("\n" + this.textLine);
+        article.append("\n");
+        article.append(this.textLine);
         this.textLine = bReader.readLine();
     }
 
 
     private boolean findMatch(String regexp) throws PatternSyntaxException {
         Pattern pattern = Pattern.compile(regexp);
-        this.matcher = pattern.matcher(this.textLine);
-        return this.matcher.find();
+        Matcher matcher = pattern.matcher(this.textLine);
+        return matcher.find();
     }
+
     private void deleteAndConcat(BufferedReader bReader) throws IOException {
         StringBuilder sb = new StringBuilder(this.textLine);
         sb.deleteCharAt(this.textLine.length() - 1);
         this.textLine = sb.append(bReader.readLine()).toString();
+    }
+
+    private void joinChapterToList(int chNumber, String chTitle, List<Article> articles, List<Chapter> chapters) {
+        chapters.add(new Chapter(chNumber, chTitle, articles));
+    }
+
+    private void joinArticleToList(int artNumber, StringBuilder text, String title, List<Article> articles) {
+        articles.add(new Article(artNumber, text.toString(), title));
     }
 }

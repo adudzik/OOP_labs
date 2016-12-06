@@ -1,28 +1,31 @@
 package agh.cs.lab8;
 
 /**
+ * This class stores a whole article
+ * with article number and chapter subtitle
  * Created by Arek on 2016-12-01.
  */
-public class Article {
+class Article {
     private int articleNumber;
     private String chapterSubtitle;
     private String articlePoints;
 
-    public Article(int n, String s, String t){
+    Article(int n, String s, String t) {
         this.articleNumber = n;
         this.articlePoints = s;
         this.chapterSubtitle = t;
     }
 
-    public int getArticleNumber(){
+
+    int getArticleNumber() {
         return this.articleNumber;
     }
 
-    public String getArticlePoints(){
+    String getArticlePoints() {
         return this.articlePoints;
     }
 
-    public String getChapterSubtitle(){
+    String getChapterSubtitle() {
         return this.chapterSubtitle;
     }
 }
