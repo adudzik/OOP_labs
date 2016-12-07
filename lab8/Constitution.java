@@ -7,19 +7,19 @@ import java.util.List;
  * This class contains all chapters
  * Created by Arek on 2016-12-01.
  */
-public class Constitution {
-     private List<Chapter> chapters = new ArrayList<>();
+class Constitution {
+    private List<Chapter> chapters = new ArrayList<>();
 
-     List<Chapter> getChaptersList(){
-          return this.chapters;
-     }
+    List<Chapter> getChaptersList() {
+        return this.chapters;
+    }
 
-     Chapter getChapter(int i){
-          return this.chapters.get(i);
-     }
+    Chapter getChapter(int i) {
+        return this.chapters.get(i);
+    }
 
-     void setChapters(List<Chapter> l){
-          this.chapters = l;
-     }
+    void setChapters(List<Chapter> l) {
+        this.chapters = l;
+    }
 
 }

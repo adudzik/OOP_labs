@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
 
 /**
  * This class transform file text to object form
@@ -16,10 +14,9 @@ import java.util.regex.PatternSyntaxException;
  * Created by Arek on 2016-12-01.
  */
 class FileParser {
-
     private String textLine;
 
-    Constitution parse(String filePath) throws IOException, PatternSyntaxException {
+    Constitution parse(String filePath) throws IOException {
         Constitution result = new Constitution();
         List<Chapter> pChapters = new ArrayList<>();
         List<Article> pArticles = new ArrayList<>();
@@ -44,8 +41,8 @@ class FileParser {
             }
 
             if (this.findMatch("Rozdzia")) {
-                this.joinArticleToList(artCount, articlePoints, chSubTitle.toString(), pArticles);
-                this.joinChapterToList(chapCount, chapTitle.toString(), pArticles, pChapters);
+                pArticles.add(new Article(artCount, articlePoints.toString(), chSubTitle.toString()));
+                pChapters.add(new Chapter(chapCount, chapTitle.toString(), pArticles));
                 chapCount++;
 
                 chSubTitle = new StringBuilder("");
@@ -77,7 +74,7 @@ class FileParser {
 
             if (this.findMatch("Art. ")) {
                 if (!(articlePoints.toString().isEmpty()))
-                    this.joinArticleToList(artCount, articlePoints, chSubTitle.toString(), pArticles);
+                    pArticles.add(new Article(artCount, articlePoints.toString(), chSubTitle.toString()));
                 artCount++;
                 articlePoints = new StringBuilder();
             }
@@ -92,8 +89,8 @@ class FileParser {
         } while (this.textLine != null);
 
         artCount++;
-        this.joinArticleToList(artCount, articlePoints, chSubTitle.toString(), pArticles);
-        this.joinChapterToList(chapCount, chapTitle.toString(), pArticles, pChapters);
+        pArticles.add(new Article(artCount, articlePoints.toString(), chSubTitle.toString()));
+        pChapters.add(new Chapter(chapCount, chapTitle.toString(), pArticles));
 
         bufferedReader.close();
         result.setChapters(pChapters);
@@ -111,7 +108,7 @@ class FileParser {
     }
 
 
-    private boolean findMatch(String regexp) throws PatternSyntaxException {
+    private boolean findMatch(String regexp) {
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(this.textLine);
         return matcher.find();
@@ -121,13 +118,5 @@ class FileParser {
         StringBuilder sb = new StringBuilder(this.textLine);
         sb.deleteCharAt(this.textLine.length() - 1);
         this.textLine = sb.append(bReader.readLine()).toString();
-    }
-
-    private void joinChapterToList(int chNumber, String chTitle, List<Article> articles, List<Chapter> chapters) {
-        chapters.add(new Chapter(chNumber, chTitle, articles));
-    }
-
-    private void joinArticleToList(int artNumber, StringBuilder text, String title, List<Article> articles) {
-        articles.add(new Article(artNumber, text.toString(), title));
     }
 }

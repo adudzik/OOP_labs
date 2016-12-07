@@ -1,7 +1,6 @@
 package agh.cs.lab8;
 
 import java.io.IOException;
-import java.util.regex.PatternSyntaxException;
 
 /**
  * This is a main class
@@ -11,12 +10,10 @@ public class ConstitutionSystem {
     public static void main(String[] args) {
         try {
             new ConstitutionPrinter().print(args);
-        } catch (IOException err) {
-            System.out.println(err);
-        } catch (PatternSyntaxException err) {
-            System.out.println(err + " pattern has a kind of syntax error");
         } catch (IllegalArgumentException err) {
             System.out.println(err.getMessage());
+        } catch (IOException err) {
+            System.out.println(err);
         }
     }
 }

@@ -3,7 +3,6 @@ package agh.cs.lab8;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 /**
  * This class transform program's arguments to options
@@ -45,7 +44,7 @@ class OptionParser {
         return options;
     }
 
-    private boolean findOption(String arg, int i) throws PatternSyntaxException {
+    private boolean findOption(String arg, int i) {
         if (i == 0) {
             Pattern pattern = Pattern.compile("[a-z [A-Z]]");
             if (pattern.matcher(arg).find()) {
@@ -63,13 +62,17 @@ class OptionParser {
         }
 
         if (i == 2 || (i == 3 && this.printType == 'a')) {
+            Integer a = Integer.valueOf(arg);
             Pattern pattern = Pattern.compile("[0-9]");
             if (pattern.matcher(arg).find()) {
-                this.contentToPrint.add(Integer.valueOf(arg));
-                return true;
+                if (a < 0 || a > 243 || (this.printType == 'r' && a > 13))
+                    throw new IllegalArgumentException(" You want to print content that not exist. You typed: " + this.printType + " " + a);
+                else {
+                    this.contentToPrint.add(a);
+                    return true;
+                }
             } else return false;
         }
         return false;
     }
-
 }

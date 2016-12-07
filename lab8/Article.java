@@ -16,7 +16,6 @@ class Article {
         this.chapterSubtitle = t;
     }
 
-
     int getArticleNumber() {
         return this.articleNumber;
     }

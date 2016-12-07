@@ -19,11 +19,11 @@ class Chapter {
         this.chapterTitle = t;
     }
 
-    List<Article> getArticles(){
+    List<Article> getArticles() {
         return this.articles;
     }
 
-    int getChapterNumber(){
+    int getChapterNumber() {
         return this.chapterNumber;
     }
 
