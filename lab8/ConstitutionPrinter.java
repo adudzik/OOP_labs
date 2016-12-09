@@ -28,7 +28,7 @@ class ConstitutionPrinter {
 
         System.out.print(chapter.getChapterTitle());
 
-        if (!(prevTitle.equals(" ")))
+        if (!(prevTitle.equals("")))
             System.out.print("\n" + prevTitle);
 
         for (Article art : articles) {

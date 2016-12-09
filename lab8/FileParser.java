@@ -105,7 +105,6 @@ class FileParser {
         this.textLine = bReader.readLine();
     }
 
-
     private boolean findMatch(String regexp) {
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(this.textLine);

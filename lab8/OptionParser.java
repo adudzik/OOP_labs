@@ -29,7 +29,7 @@ class OptionParser {
         return new OptionParser().parse(args);
     }
 
-    private OptionParser parse(String[] args) throws IllegalArgumentException {
+    private OptionParser parse(String[] args) throws IllegalArgumentException{
         if (args.length < 3 || args.length > 4)
             throw new IllegalArgumentException("You type incorrect number of arguments: " + args.length + " (min=3 and max=4)");
 
@@ -44,7 +44,7 @@ class OptionParser {
         return options;
     }
 
-    private boolean findOption(String arg, int i) {
+    private boolean findOption(String arg, int i) throws NumberFormatException{
         if (i == 0) {
             Pattern pattern = Pattern.compile("[a-z [A-Z]]");
             if (pattern.matcher(arg).find()) {
