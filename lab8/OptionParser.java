@@ -31,13 +31,13 @@ class OptionParser {
 
     private OptionParser parse(String[] args) throws IllegalArgumentException {
         if (args.length < 3 || args.length > 4)
-            throw new IllegalArgumentException(" You type incorrect number of arguments: " + args.length + " (min=3 and max=4)");
+            throw new IllegalArgumentException("You type incorrect number of arguments: " + args.length + " (min=3 and max=4)");
 
         OptionParser options = new OptionParser();
         int i = 0;
         do {
             if (!(options.findOption(args[i], i)))
-                throw new IllegalArgumentException(" Find illegal option in this place: " + args[i]);
+                throw new IllegalArgumentException("Find illegal option in this place: " + args[i]);
             i++;
         } while (i < args.length);
 
@@ -66,7 +66,7 @@ class OptionParser {
             Pattern pattern = Pattern.compile("[0-9]");
             if (pattern.matcher(arg).find()) {
                 if (a < 0 || a > 243 || (this.printType == 'r' && a > 13))
-                    throw new IllegalArgumentException(" You want to print content that not exist. You typed: " + this.printType + " " + a);
+                    throw new IllegalArgumentException("You want to print content that not exist. You typed: -" + this.printType + " " + a);
                 else {
                     this.contentToPrint.add(a);
                     return true;

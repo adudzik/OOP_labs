@@ -32,7 +32,8 @@ class FileParser {
 
         int artCount = 0;
         int chapCount = 0;
-        int isChapterTitle = 0;
+        boolean isChapterTitle = true;
+
 
         do {
             if (this.hasUselessLine()) {
@@ -47,10 +48,9 @@ class FileParser {
 
                 chSubTitle = new StringBuilder("");
                 chapTitle = new StringBuilder(this.textLine);
-                isChapterTitle = 0;
+                isChapterTitle = false;
 
                 pArticles = new ArrayList<>();
-
 
                 articlePoints = new StringBuilder();
                 this.textLine = bufferedReader.readLine();
@@ -59,14 +59,12 @@ class FileParser {
             }
 
             if (this.findMatch("[^XI ][A-Z][A-Z]")) {
-                if (isChapterTitle == 0) {
+                if (!isChapterTitle) {
                     chapTitle.append("\n");
                     chapTitle.append(this.textLine);
-                    isChapterTitle++;
+                    isChapterTitle = true;
                 } else {
-
                     chSubTitle = new StringBuilder(this.textLine);
-
                 }
                 this.textLine = bufferedReader.readLine();
                 continue;
@@ -80,7 +78,7 @@ class FileParser {
             }
 
             if (this.textLine.endsWith("-")) {
-                this.deleteAndConcat(bufferedReader);
+                this.deleteAndConcat(bufferedReader, articlePoints);
                 continue;
             }
 
@@ -114,9 +112,18 @@ class FileParser {
         return matcher.find();
     }
 
-    private void deleteAndConcat(BufferedReader bReader) throws IOException {
-        StringBuilder sb = new StringBuilder(this.textLine);
-        sb.deleteCharAt(this.textLine.length() - 1);
-        this.textLine = sb.append(bReader.readLine()).toString();
+    private void deleteAndConcat(BufferedReader bReader, StringBuilder article) throws IOException {
+        StringBuilder that = new StringBuilder(this.textLine);
+        that.deleteCharAt(this.textLine.length() - 1);
+
+        String next = bReader.readLine();
+        String[] partedLine = next.split(" ", 2);
+        that.append(partedLine[0]);
+        article.append("\n");
+        article.append(that);
+        if(partedLine.length ==2)
+            this.textLine = partedLine[1];
+        else
+            this.textLine = bReader.readLine();
     }
 }

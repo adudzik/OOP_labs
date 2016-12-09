@@ -28,13 +28,13 @@ class ConstitutionPrinter {
 
         System.out.print(chapter.getChapterTitle());
 
-        if (!(prevTitle.equals("")))
+        if (!(prevTitle.equals(" ")))
             System.out.print("\n" + prevTitle);
 
         for (Article art : articles) {
             System.out.print(art.getArticlePoints());
 
-            if (!(prevTitle.equals(art.getChapterSubtitle()) && !prevTitle.equals(""))) {
+            if (!(prevTitle.equals(art.getChapterSubtitle()) && !(prevTitle.equals(" ")))) {
                 prevTitle = art.getChapterSubtitle();
                 System.out.print("\n" + prevTitle);
             }
@@ -65,7 +65,13 @@ class ConstitutionPrinter {
     }
 
     private void printArticles(List<Integer> content, Constitution constitution) {
-        for (int i = content.get(0); i <= content.get(1); i++)
-            printSingleArticle(i, constitution);
+        if(content.get(0) < content.get(1)) {
+            for (int i = content.get(0); i <= content.get(1); i++)
+                printSingleArticle(i, constitution);
+        }
+        else {
+            for (int i = content.get(0); i >= content.get(1); i--)
+                printSingleArticle(i, constitution);
+        }
     }
 }
