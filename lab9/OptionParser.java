@@ -41,9 +41,7 @@ public class OptionParser {
     private boolean findOption(String arg, int i) throws IllegalArgumentException {
         if (i == 0) {
             Pattern pattern = Pattern.compile("-c");
-            if (pattern.matcher(arg).matches())
-                return true;
-            else return false;
+            return pattern.matcher(arg).matches();
         }
 
         if (i == 1) {
@@ -59,9 +57,7 @@ public class OptionParser {
 
         if (i == 2) {
             Pattern pattern = Pattern.compile("-o");
-            if (pattern.matcher(arg).matches())
-                return true;
-            else return false;
+            return pattern.matcher(arg).matches();
         }
 
         if (i==3) {
