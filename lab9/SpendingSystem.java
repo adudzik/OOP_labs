@@ -8,10 +8,16 @@ import java.io.IOException;
 public class SpendingSystem {
     public static void main(String[] args) {
     try {
-        new JSONExecutor().getJson();
-        //new OptionParser().getUserOptions(args);
-    } catch(IOException err){
+        new OptionParser().getUserOptions(args);
+        Parliament p = new JsonDeputy().getAllDeputies();
+        System.out.println(p.getCadenceDeputiesList().size());
+
+        for(Deputy dep : p.getCadenceDeputiesList()){
+            System.out.println(dep.getId() + " " + dep.getName());
+        }
     } catch(IllegalArgumentException err){
+        System.out.println(err.getMessage());
+    } catch (IOException err){
         System.out.println(err.getMessage());
     }
     }
