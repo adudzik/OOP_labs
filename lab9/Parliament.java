@@ -11,22 +11,15 @@ import java.util.Map;
 public class Parliament {
     private int cadenceNumber;
     private List<Deputy> cadenceDeputiesList = new ArrayList<>();
-    private Map<String, Integer> cadenceDeputiesMap = new HashMap<>();
+
 
     Parliament(int num, List<Deputy> deputiesList){
         this.cadenceNumber = num;
         this.cadenceDeputiesList = deputiesList;
-
-        for(Deputy dep : deputiesList)
-            this.cadenceDeputiesMap.put(dep.getName(), dep.getId());
     }
 
     int getCadenceNumber(){
         return this.cadenceNumber;
-    }
-
-    Map<String, Integer> getCadenceDeputiesMap(){
-        return this.cadenceDeputiesMap;
     }
 
     List<Deputy> getCadenceDeputiesList(){

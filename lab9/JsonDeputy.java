@@ -14,12 +14,12 @@ import java.util.stream.Collectors;
  */
 public class JsonDeputy {
 
-    public Parliament getAllDeputies() throws IOException{
+    public Parliament getAllDeputies(int cadenceNumber) throws IOException{
         String address = "https://api-v3.mojepanstwo.pl/dane/poslowie.json";
         String cadenceCondition = "?conditions%5Bposlowie.kadencja%5D=";
         String pageCondition = "&_type=objects&page=";
 
-        List<Deputy> deputies = this.getDeputyJson(address + cadenceCondition + 8 + pageCondition + 1);
+        List<Deputy> deputies = this.getDeputyJson(address + cadenceCondition + cadenceNumber + pageCondition + 1);
 
         int i = 2;
         do {
@@ -42,12 +42,13 @@ public class JsonDeputy {
                     .stream()
                     .map(arr -> new Deputy(Integer.valueOf(arr.getJsonObject("data").getString("poslowie.id")), arr.getJsonObject("data").getString("poslowie.nazwa")))
                     .collect(Collectors.toList()));
+
+            inputStream.close();
         } catch (MalformedURLException err){
             throw new MalformedURLException("There is a problem with this URL address: " + urlAddress);
         } catch (IOException err){
             throw new IOException("Can't find this URL address" + urlAddress);
         }
-
         return results;
     }
 }

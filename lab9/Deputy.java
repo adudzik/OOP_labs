@@ -1,5 +1,6 @@
 package agh.cs.lab9;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -8,7 +9,12 @@ import java.util.List;
 public class Deputy {
     private String name;
     private int id;
-    private List<Spending> spending;
+    private List<Spending> spending = new LinkedList<>();
+
+    Deputy(){
+        this.name = null;
+        this.id = 0;
+    }
 
     Deputy(int id, String name){
         this.id = id;
@@ -23,16 +29,11 @@ public class Deputy {
         return this.id;
     }
 
-    void addSpending(Spending s){
-        this.spending.add(s);
+    void setSpending(List<Spending> s){
+        this.spending = s;
     }
 
-    long getAllSpending(){
-        long result = 0;
-
-        for(Spending s : this.spending)
-            result += s.getSpendingSum();
-
-        return result;
+    List<Spending> getSpending(){
+        return this.spending;
     }
 }

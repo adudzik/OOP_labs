@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 public class OptionParser {
     private Options option;
     private int cadence;
-    private String name = "";
+    private String name;
 
     Options getOption() {
         return this.option;
@@ -18,13 +18,17 @@ public class OptionParser {
         return this.cadence;
     }
 
+    String getName(){
+        return this.name;
+    }
+
     OptionParser getUserOptions(String[] args) {
         return new OptionParser().parse(args);
     }
 
     private OptionParser parse(String[] args) throws IllegalArgumentException {
-        if (args.length < 3 || args.length > 5)
-            throw new IllegalArgumentException("You type incorrect number of arguments: " + args.length + " (min=3 and max=5)");
+        if (args.length < 3 || args.length > 7)
+            throw new IllegalArgumentException("You type incorrect number of arguments: " + args.length + " (min=3 and max=7)");
 
         OptionParser result = new OptionParser();
         int i = 0;
@@ -71,10 +75,13 @@ public class OptionParser {
             } else return false;
         }
 
-        if (i==4 || i==5){
+        if (i==4 || i==5 || i==6){
             Pattern pattern = Pattern.compile("[a-z[A-Z]]");
-            if (pattern.matcher(arg).matches()) {
-                this.name = this.name + arg + " ";
+            if (pattern.matcher(arg).find()) {
+                if(i==4)
+                    this.name = arg;
+                else
+                    this.name = this.name + " " + arg;
                 return true;
             } else return false;
         }

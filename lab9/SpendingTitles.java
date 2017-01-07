@@ -9,12 +9,12 @@ public class SpendingTitles {
     HashMap<String, Integer> titlesMap = new HashMap<>();
 
     int addNewTitle(String title){
-        if(titlesMap.containsKey(title))
+        if(this.titlesMap.containsKey(title))
             return this.titlesMap.get(title);
 
         else{
             this.titlesMap.put(title, this.titlesMap.size());
-            return this.titlesMap.size();
+            return this.titlesMap.size() - 1;
         }
     }
 

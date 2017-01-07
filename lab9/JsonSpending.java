@@ -5,30 +5,37 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by Arek on 2017-01-05.
  */
 public class JsonSpending {
-    private Spending spending;
-    private SpendingTitles titles;
+    private List<Spending> spending = new LinkedList<>();
 
-    public JsonSpending getDeputySpendings(int deputyID) throws IOException{
-        return new JsonSpending().getAllSpending("https://api-v3.mojepanstwo.pl/dane/poslowie/" + deputyID + ".json?layers[]=wyjazdy");
+    public List<Spending> getDeputySpending(int deputyID) throws IOException{
+        return getAllSpending("https://api-v3.mojepanstwo.pl/dane/poslowie/" + deputyID + ".json?layers[]=wydatki");
     }
 
-    private JsonSpending getAllSpending(String urlAddress) throws IOException{
+    private List<Spending> getAllSpending(String urlAddress) throws IOException{
         try{
+
             URL url = new URL(urlAddress);
             InputStream inputStream = url.openStream();
             JsonReader jsonReader = Json.createReader(inputStream);
-            JsonObject spending = jsonReader.readObject();
-            JsonArray titlesArray = spending.getJsonArray("punkty");
-            JsonArray yearsArray = spending.getJsonArray("roczniki");
+            JsonObject jsonSpendingObject = jsonReader.readObject();
 
-            for(int i=0; i<yearsArray.size(); i++)
-                getYearSpending(titlesArray, yearsArray.getJsonObject(i));
-            return this;
+            JsonObject spendingObject = jsonSpendingObject.getJsonObject("layers");
+            JsonObject spendingObject2 = spendingObject.getJsonObject("wydatki");
+            JsonArray titlesArray = spendingObject2.getJsonArray("punkty");
+            JsonArray yearsArray = spendingObject2.getJsonArray("roczniki");
+
+            for(int i=0; i<yearsArray.size(); i++) {
+                this.spending.add(getYearSpending(titlesArray, yearsArray.getJsonObject(i)));
+            }
+            inputStream.close();
+            return this.spending;
         } catch (MalformedURLException err){
             throw new MalformedURLException("There is a problem with this URL address: " + urlAddress);
         } catch (IOException err){
@@ -36,11 +43,14 @@ public class JsonSpending {
         }
     }
 
-    private void getYearSpending(JsonArray titlesArray, JsonObject yearsSpendingArray){
-        JsonArray spending = yearsSpendingArray.getJsonArray("pola");
+    private Spending getYearSpending(JsonArray titlesArray, JsonObject yearSpending) throws IOException{
+        JsonArray spendingArray = yearSpending.getJsonArray("pola");
+        Spending result = new Spending(Integer.valueOf(yearSpending.getString("rok")));
+        if(spendingArray.size() == titlesArray.size()){
+            for(int i=0; i<spendingArray.size(); i++)
+                result.addNewSpending(titlesArray.getJsonObject(i).getString("tytul"), spendingArray.getString(i));
 
-        if(spending.size() == titlesArray.size()){
-
-        }
+            return result;
+        } else throw new IOException("There is a problem with JSON. It more titles than costs");
     }
 }
