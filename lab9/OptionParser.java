@@ -66,7 +66,7 @@ public class OptionParser {
 
         if (i==3) {
             Pattern pattern = Pattern.compile("[0-9]");
-            if (pattern.matcher(arg).find()) {
+            if (pattern.matcher(arg).matches()) {
                 int a = Integer.valueOf(arg);
                 if(a >= 1 && a < 8){
                     this.option = setOption(a);
@@ -108,7 +108,7 @@ public class OptionParser {
                 break;
 
             case 5:
-                result = Options.LongestTrip;
+                result = Options.MostDayOnTrip;
                 break;
 
             case 6:

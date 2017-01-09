@@ -23,9 +23,10 @@ public class JsonDeputy {
 
         int i = 2;
         do {
-            deputies.addAll(deputies.size()-1, this.getDeputyJson(address + cadenceCondition + 8 + pageCondition + i));
+            deputies.addAll(deputies.size()-1, this.getDeputyJson(address + cadenceCondition + cadenceNumber + pageCondition + i));
+            if(cadenceNumber == 8 && i==10) break;
             i++;
-        } while (i <=15);
+        } while (i <=11);
 
         return new Parliament(7, deputies);
     }

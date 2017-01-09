@@ -8,7 +8,7 @@ enum Options {
     RepairsSpending,
     CadenceAverage,
     MostForeignTrips,
-    LongestTrip,
+    MostDayOnTrip,
     MostExpensiveTrip,
     ItalyJourney
 }

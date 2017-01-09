@@ -10,6 +10,7 @@ public class Deputy {
     private String name;
     private int id;
     private List<Spending> spending = new LinkedList<>();
+    private Trips trips;
 
     Deputy(){
         this.name = null;
@@ -35,5 +36,13 @@ public class Deputy {
 
     List<Spending> getSpending(){
         return this.spending;
+    }
+
+    Trips getTrips(){
+        return this.trips;
+    }
+
+    public void setTrips(Trips trips) {
+        this.trips = trips;
     }
 }

@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class Spending {
     private HashMap<Integer, Double> spendingMap = new HashMap<>();
     private int year;
-    private Double spendingSum;
+    private Double spendingSum = 0.0;
     private SpendingTitles titles = new SpendingTitles();
 
     Spending(int year){
@@ -19,13 +19,15 @@ public class Spending {
     void addNewSpending(String title, String value){
         int key = this.titles.addNewTitle(title);
         this.spendingMap.put(key, Double.valueOf(value));
-        System.out.println("tu");
         this.spendingSum += Double.valueOf(value);
-        System.out.println("tu");
     }
 
     int getYear(){
         return this.year;
+    }
+
+    Double getSpending(int id){
+        return this.spendingMap.get(id);
     }
 
     Double getSpendingSum(){

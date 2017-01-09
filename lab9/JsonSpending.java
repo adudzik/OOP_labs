@@ -18,7 +18,7 @@ public class JsonSpending {
         return getAllSpending("https://api-v3.mojepanstwo.pl/dane/poslowie/" + deputyID + ".json?layers[]=wydatki");
     }
 
-    private List<Spending> getAllSpending(String urlAddress) throws IOException{
+    private List<Spending> getAllSpending(String urlAddress) throws IOException {
         try{
 
             URL url = new URL(urlAddress);
@@ -35,22 +35,23 @@ public class JsonSpending {
                 this.spending.add(getYearSpending(titlesArray, yearsArray.getJsonObject(i)));
             }
             inputStream.close();
-            return this.spending;
+
         } catch (MalformedURLException err){
-            throw new MalformedURLException("There is a problem with this URL address: " + urlAddress);
+             throw new MalformedURLException("There is a problem with this URL address: " + urlAddress);
         } catch (IOException err){
-            throw new IOException("Can't find this URL address" + urlAddress);
-        }
+             throw new IOException("Something goes wrong in JSON: " + urlAddress);
+        } return this.spending;
     }
 
-    private Spending getYearSpending(JsonArray titlesArray, JsonObject yearSpending) throws IOException{
+    private Spending getYearSpending(JsonArray titlesArray, JsonObject yearSpending) {
         JsonArray spendingArray = yearSpending.getJsonArray("pola");
         Spending result = new Spending(Integer.valueOf(yearSpending.getString("rok")));
-        if(spendingArray.size() == titlesArray.size()){
-            for(int i=0; i<spendingArray.size(); i++)
+        int tArraySize = titlesArray.size();
+        for(int i=0; i<spendingArray.size(); i++) {
+            if (i < tArraySize)
                 result.addNewSpending(titlesArray.getJsonObject(i).getString("tytul"), spendingArray.getString(i));
-
+            else result.addNewSpending("no title", spendingArray.getString(i));
+        }
             return result;
-        } else throw new IOException("There is a problem with JSON. It more titles than costs");
     }
 }
