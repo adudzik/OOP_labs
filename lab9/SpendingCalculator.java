@@ -6,22 +6,25 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.lang.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Arek on 2016-12-16.
+ * <p>
+ * This calculates and prints all data that user wants.
  */
-public class SpendingCalculator {
+class SpendingCalculator {
     private static DecimalFormat decimalFormat = new DecimalFormat();
 
-    SpendingCalculator(){
+    SpendingCalculator() {
         decimalFormat.setMaximumFractionDigits(2);
     }
 
-    public void calculate(java.lang.String[] args) throws IOException, InterruptedException{
+    void calculate(java.lang.String[] args) throws IOException, InterruptedException {
         OptionParser userOptions = new OptionParser().getUserOptions(args);
         Parliament p = this.createParliament(userOptions.getCadence());
 
-        switch(userOptions.getOption()){
+        switch (userOptions.getOption()) {
             case DeputySpending:
                 this.calculateSingleDeputyAllSpending(p, userOptions.getName());
                 break;
@@ -52,7 +55,7 @@ public class SpendingCalculator {
         }
     }
 
-    private Parliament createParliament(int cadenceNumber) throws InterruptedException{
+    private Parliament createParliament(int cadenceNumber) throws InterruptedException {
         List<Deputy> deputies = new LinkedList<>();
         int k = 1;
         int lastPageNumber = new JsonDeputy(cadenceNumber, 1).getLastPageNumber();
@@ -69,151 +72,164 @@ public class SpendingCalculator {
 
             for (Thread t : threads)
                 t.join();
-        } catch(InterruptedException err){
-              throw new InterruptedException("The thread has been interrupted");
+        } catch (InterruptedException err) {
+            throw new InterruptedException("The thread has been interrupted");
         }
 
 
-        for(int i=1; i<pages.size(); i++)
+        for (int i = 1; i < pages.size(); i++)
             deputies.addAll(pages.get(i));
 
-        return new Parliament(cadenceNumber, deputies);
+        return new Parliament(deputies);
     }
 
-   private void getTripsInfo(Parliament parliament) throws InterruptedException{
+    private void getTripsInfo(Parliament parliament) throws InterruptedException {
         List<Thread> threads = new LinkedList<>();
         List<Deputy> deputies = parliament.getCadenceDeputiesList();
 
-        try{
-            for(Deputy d : deputies){
-                threads.add(new Thread(new JsonTrips(d)));
-            }
+        try {
+            threads.addAll(deputies.stream().map(d -> new Thread(new JsonTrips(d))).collect(Collectors.toList()));
 
             threads.forEach(Thread::start);
 
-            for(Thread t : threads)
+            for (Thread t : threads)
                 t.join();
 
-        } catch (InterruptedException err){
+        } catch (InterruptedException err) {
             throw new InterruptedException("The thread has been interrupted");
         }
     }
 
-    private void setSingleDeputySpending(Parliament parliament, String deputyName) throws IOException{
+    private void setSingleDeputySpending(Parliament parliament, String deputyName) throws IOException {
         Deputy deputy = parliament.getDeputy(deputyName);
-        if(deputy.getName() == null)
+
+        if (deputy.getName() == null)
             throw new IllegalArgumentException("This deputy " + deputyName + " does not exist!");
 
         new JsonSpending(deputy).getDeputySpending();
     }
 
-    private void calculateSingleDeputyAllSpending(Parliament parliament, String deputyName) throws IOException{
-        setSingleDeputySpending(parliament,deputyName);
+    private void calculateSingleDeputyAllSpending(Parliament parliament, String deputyName) throws IOException {
+        setSingleDeputySpending(parliament, deputyName);
+
         Deputy deputy = parliament.getDeputy(deputyName);
         Double result = 0.0;
+
         List<Spending> deputySpending = deputy.getSpending();
 
-        for(Spending spending : deputySpending){
+        for (Spending spending : deputySpending) {
             result += spending.getSpendingSum();
         }
-
+        System.out.println("<------------------------------------------------------------------>");
         System.out.println(deputyName + " " + decimalFormat.format(result) + "zł");
+        System.out.println("<------------------------------------------------------------------>");
     }
 
-    private void getSingleDeputyRepairsSpending(Parliament parliament, String deputyName) throws IOException{
+    private void getSingleDeputyRepairsSpending(Parliament parliament, String deputyName) throws IOException {
         setSingleDeputySpending(parliament, deputyName);
+
         Deputy deputy = parliament.getDeputy(deputyName);
         List<Spending> deputySpending = deputy.getSpending();
+
         Double result = 0.0;
-        for(Spending spending: deputySpending){
+
+        for (Spending spending : deputySpending) {
             int id = spending.getTitles().getTitleID("Koszty drobnych napraw i remont\u00f3w lokalu biura poselskiego");
-            if(id == -1)
+            if (id == -1)
                 result += 0.0;
             else
                 result += spending.getSpending(id);
         }
-
+        System.out.println("<------------------------------------------------------------------>");
         System.out.println(deputyName + " " + decimalFormat.format(result) + "zł");
+        System.out.println("<------------------------------------------------------------------>");
     }
 
-    private void getDeputyWithMostTrips(Parliament parliament) throws IOException, InterruptedException{
+    private void getDeputyWithMostTrips(Parliament parliament) throws IOException, InterruptedException {
         getTripsInfo(parliament);
 
         String name = "";
         int trips = 0;
 
-        for(Deputy deputy : parliament.getCadenceDeputiesList()){
-            if(deputy.getTrips() != null && deputy.getTrips().getTripsCount() > trips){
+        for (Deputy deputy : parliament.getCadenceDeputiesList()) {
+            if (deputy.getTrips() != null && deputy.getTrips().getTripsCount() > trips) {
                 trips = deputy.getTrips().getTripsCount();
                 name = deputy.getName();
             }
         }
-
+        System.out.println("<------------------------------------------------------------------>");
         System.out.println("Najwięcej wyjazdów: " + name + " " + trips + " wyjazdy.");
+        System.out.println("<------------------------------------------------------------------>");
     }
 
-    private void getDeputiesFromItalianTrip(Parliament parliament) throws IOException, InterruptedException{
+    private void getDeputiesFromItalianTrip(Parliament parliament) throws IOException, InterruptedException {
         getTripsInfo(parliament);
+
         List<Deputy> deputies = parliament.getCadenceDeputiesList();
+        System.out.println("<------------------------------------------------------------------>");
         System.out.println("Posłowie we Włoszech:");
-        for(Deputy d : deputies)
-            if(d.getTrips().hasBeenInItaly())
-                System.out.println(d.getName());
+
+        deputies.stream().filter(d -> d.getTrips().hasBeenInItaly()).forEach(d -> System.out.println(d.getName()));
+        System.out.println("<------------------------------------------------------------------>");
     }
 
-    private void getDeputyWithLongestTrips(Parliament parliament) throws IOException, InterruptedException{
+    private void getDeputyWithLongestTrips(Parliament parliament) throws IOException, InterruptedException {
         getTripsInfo(parliament);
 
         String name = "";
         int days = 0;
 
-        for(Deputy deputy : parliament.getCadenceDeputiesList()){
-            if(deputy.getTrips().getLongestTripDaysCount() > days){
+        for (Deputy deputy : parliament.getCadenceDeputiesList()) {
+            if (deputy.getTrips().getLongestTripDaysCount() > days) {
                 days = deputy.getTrips().getLongestTripDaysCount();
                 name = deputy.getName();
             }
         }
-
+        System.out.println("<------------------------------------------------------------------>");
         System.out.println("Najdłuższą podróż odbył: " + name + " " + days + " dni.");
+        System.out.println("<------------------------------------------------------------------>");
     }
 
-    private void getDeputyWithMostExpensiveTrip(Parliament parliament) throws IOException, InterruptedException{
+    private void getDeputyWithMostExpensiveTrip(Parliament parliament) throws IOException, InterruptedException {
         getTripsInfo(parliament);
 
         String name = "";
         Double cost = 0.0;
 
-        for(Deputy deputy : parliament.getCadenceDeputiesList()){
-            if(deputy.getTrips().getMostExpensiveTripsCost() > cost){
+        for (Deputy deputy : parliament.getCadenceDeputiesList()) {
+            if (deputy.getTrips().getMostExpensiveTripsCost() > cost) {
                 cost = deputy.getTrips().getMostExpensiveTripsCost();
                 name = deputy.getName();
             }
         }
-
+        System.out.println("<------------------------------------------------------------------>");
         System.out.println("Najdroższa podróż: " + name + " " + decimalFormat.format(cost) + " zł.");
+        System.out.println("<------------------------------------------------------------------>");
     }
 
     private void getCadenceAverage(Parliament parliament) throws IOException, InterruptedException {
         Double sum = 0.0;
-        List<Thread> threads = new LinkedList<>();
-        for(Deputy d : parliament.getCadenceDeputiesList()){
-            threads.add(new Thread(new JsonSpending(d)));
-        }
+        List<Thread> threads = parliament.getCadenceDeputiesList()
+                .stream().map(d -> new Thread(new JsonSpending(d))).collect(Collectors.toCollection(LinkedList::new));
+
         threads.forEach(Thread::start);
+
         try {
             for (Thread t : threads)
                 t.join();
-        } catch(InterruptedException err){
+        } catch (InterruptedException err) {
             throw new InterruptedException("Something went wrong in multithreading");
         }
 
-        for(Deputy d : parliament.getCadenceDeputiesList()){
-            for(Spending s : d.getSpending())
+        for (Deputy d : parliament.getCadenceDeputiesList()) {
+            for (Spending s : d.getSpending())
                 sum += s.getSpendingSum();
         }
 
 
         int count = parliament.getCadenceDeputiesList().size();
-        System.out.println("Srednia suma wydatków :" + decimalFormat.format(sum/count) + "zł.");
+        System.out.println("<------------------------------------------------------------------>");
+        System.out.println("Srednia suma wydatków :" + decimalFormat.format(sum / count) + "zł.");
+        System.out.println("<------------------------------------------------------------------>");
     }
 }

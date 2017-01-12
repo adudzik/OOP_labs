@@ -4,8 +4,10 @@ import java.util.regex.Pattern;
 
 /**
  * Created by Arek on 2016-12-16.
+ * <p>
+ * This class parses input arguments.
  */
-public class OptionParser {
+class OptionParser {
     private Options option;
     private int cadence;
     private String name;
@@ -18,7 +20,7 @@ public class OptionParser {
         return this.cadence;
     }
 
-    String getName(){
+    String getName() {
         return this.name;
     }
 
@@ -27,8 +29,8 @@ public class OptionParser {
     }
 
     private OptionParser parse(String[] args) throws IllegalArgumentException {
-        if (args.length < 3 || args.length > 7)
-            throw new IllegalArgumentException("You type incorrect number of arguments: " + args.length + " (min=3 and max=7)");
+        if (args.length < 4 || args.length > 7)
+            throw new IllegalArgumentException("You type incorrect number of arguments: " + args.length + " (min=4 and max=7)");
 
         OptionParser result = new OptionParser();
         int i = 0;
@@ -52,10 +54,11 @@ public class OptionParser {
             Pattern pattern = Pattern.compile("[0-9]");
             if (pattern.matcher(arg).find()) {
                 int a = Integer.valueOf(arg);
-                if(a==7 || a==8){
+                if (a == 7 || a == 8) {
                     this.cadence = a;
                     return true;
-                } else throw new IllegalArgumentException("This cadence does not exist. You can only choose 7 or 8, but you type: " + a);
+                } else
+                    throw new IllegalArgumentException("This cadence does not exist. You can only choose 7 or 8, but you type: " + a);
             } else return false;
         }
 
@@ -64,21 +67,22 @@ public class OptionParser {
             return pattern.matcher(arg).matches();
         }
 
-        if (i==3) {
+        if (i == 3) {
             Pattern pattern = Pattern.compile("[0-9]");
             if (pattern.matcher(arg).matches()) {
                 int a = Integer.valueOf(arg);
-                if(a >= 1 && a < 8){
+                if (a >= 1 && a < 8) {
                     this.option = setOption(a);
                     return true;
-                } else throw new IllegalArgumentException("This option does not exist. You can only choose from 1 to 7, but you type: " + a);
+                } else
+                    throw new IllegalArgumentException("This option does not exist. You can only choose from 1 to 7, but you type: " + a);
             } else return false;
         }
 
-        if (i==4 || i==5 || i==6){
+        if (i == 4 || i == 5 || i == 6) {
             Pattern pattern = Pattern.compile("[a-z[A-Z]]");
             if (pattern.matcher(arg).find()) {
-                if(i==4)
+                if (i == 4)
                     this.name = arg;
                 else
                     this.name = this.name + " " + arg;
@@ -88,9 +92,9 @@ public class OptionParser {
         return false;
     }
 
-    Options setOption(int i){
+    private Options setOption(int i) {
         Options result;
-        switch(i) {
+        switch (i) {
             case 1:
                 result = Options.DeputySpending;
                 break;

@@ -4,26 +4,27 @@ import java.util.HashMap;
 
 /**
  * Created by Arek on 2017-01-05.
+ * <p>
+ * This class contains all information about
+ * how deputy spends money.
  */
-public class SpendingTitles {
-    HashMap<String, Integer> titlesMap = new HashMap<>();
+class SpendingTitles {
+    private HashMap<String, Integer> titlesMap = new HashMap<>();
 
-    int addNewTitle(String title){
-        if(this.titlesMap.containsKey(title))
+    int addNewTitle(String title) {
+        if (this.titlesMap.containsKey(title))
             return this.titlesMap.get(title);
 
-        else{
+        else {
             this.titlesMap.put(title, this.titlesMap.size());
             return this.titlesMap.size() - 1;
         }
     }
 
-    int getTitleID(String title){
-        if(titlesMap.containsKey(title))
+    int getTitleID(String title) {
+        if (titlesMap.containsKey(title))
             return this.titlesMap.get(title);
         else
             return -1;
     }
-
-
 }
