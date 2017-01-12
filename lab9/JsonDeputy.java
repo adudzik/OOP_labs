@@ -6,33 +6,35 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Created by Arek on 2016-12-16.
  */
-public class JsonDeputy {
+public class JsonDeputy implements Runnable {
+    private static String address = "https://api-v3.mojepanstwo.pl/dane/poslowie.json";
+    private static String cadenceCondition = "?conditions%5Bposlowie.kadencja%5D=";
+    private static String pageCondition = "&_type=objects&page=";
+    private int lastPageNumber;
+    private int cadenceNumber;
+    private int currentPageNumber;
 
-    public Parliament getAllDeputies(int cadenceNumber) throws IOException{
-        String address = "https://api-v3.mojepanstwo.pl/dane/poslowie.json";
-        String cadenceCondition = "?conditions%5Bposlowie.kadencja%5D=";
-        String pageCondition = "&_type=objects&page=";
-
-        List<Deputy> deputies = this.getDeputyJson(address + cadenceCondition + cadenceNumber + pageCondition + 1);
-
-        int i = 2;
-        do {
-            deputies.addAll(deputies.size()-1, this.getDeputyJson(address + cadenceCondition + cadenceNumber + pageCondition + i));
-            if(cadenceNumber == 8 && i==10) break;
-            i++;
-        } while (i <=11);
-
-        return new Parliament(7, deputies);
+    JsonDeputy(int cadenceNumber, int pageNumber){
+        this.cadenceNumber = cadenceNumber;
+        this.currentPageNumber = pageNumber;
+        this.lastPageNumber = this.getLastPageNumber();
     }
 
-    private List<Deputy> getDeputyJson(String urlAddress) throws IOException {
+    @Override
+    public void run() {
+        getPageJson();
+    }
+
+    public List<Deputy> getPageJson(){
         List<Deputy> results = new ArrayList<>();
+        String urlAddress = address + cadenceCondition + cadenceNumber + pageCondition + currentPageNumber;
         try{
             URL url = new URL(urlAddress);
             InputStream inputStream = url.openStream();
@@ -46,10 +48,28 @@ public class JsonDeputy {
 
             inputStream.close();
         } catch (MalformedURLException err){
-            throw new MalformedURLException("There is a problem with this URL address: " + urlAddress);
+            System.out.println("There is a problem with this URL address: " + urlAddress);
         } catch (IOException err){
-            throw new IOException("Can't find this URL address" + urlAddress);
+            System.out.println("Can't find this URL address" + urlAddress);
         }
         return results;
+    }
+
+    public int getLastPageNumber(){
+        int result = 0;
+         try {
+             URL url = new URL(address + cadenceCondition + cadenceNumber + pageCondition + 1);
+             InputStream inputStream = url.openStream();
+             JsonReader jsonReader = Json.createReader(inputStream);
+             JsonObject firstPage = jsonReader.readObject();
+             JsonObject links = firstPage.getJsonObject("Links");
+             String lastPage = links.getString("last");
+             result = lastPage.charAt(lastPage.length() - 1);
+
+         } catch(MalformedURLException err){
+             System.out.println("This is incorrect URL address " + address + cadenceCondition + cadenceNumber + pageCondition + 1);
+         } catch (IOException err){
+             System.out.println("There is a problem with this URL address " + address + cadenceCondition + cadenceNumber + pageCondition + 1);
+         }   return result;
     }
 }

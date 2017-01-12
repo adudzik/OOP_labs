@@ -22,6 +22,14 @@ public class Parliament {
         return this.cadenceNumber;
     }
 
+    Deputy getDeputy(String name){
+        for(Deputy d : this.cadenceDeputiesList){
+            if(d.getName().equals(name))
+                return d;
+        }
+        return null;
+    }
+
     List<Deputy> getCadenceDeputiesList(){
         return this.cadenceDeputiesList;
     }

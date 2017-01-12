@@ -11,13 +11,21 @@ import java.util.List;
 public class SpendingSystem {
     public static void main(String[] args) {
     try {
+        long start = System.nanoTime();
         new SpendingCalculator().calculate(args);
+       // OptionParser userOptions = new OptionParser().getUserOptions(args);
+        //Parliament p = new JsonDeputy().getAllDeputies(userOptions.getCadence());
 
+        long end = System.nanoTime();
+        System.out.println((end-start)/1000000000.0);
         //for(Deputy d : p.getCadenceDeputiesList())
             //System.out.println(d.getName() + " " + d.getId() + " " + d.getTrips().getTripsCount());
 
-    } catch (IOException err){
+    } catch (IOException err) {
         System.out.println("bla" + err.getMessage());
+    } catch (InterruptedException err){
+        System.out.println(err.getMessage());
     }
+
     }
 }
