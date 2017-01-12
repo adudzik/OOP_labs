@@ -15,26 +15,32 @@ import java.util.List;
 /**
  * Created by Arek on 2017-01-07.
  */
-public class JsonTrips {
-    private List<Deputy> deputiesInItaly = new LinkedList<>();
+public class JsonTrips implements Runnable {
+    private Deputy deputy;
+    private static String urlAdd = "https://api-v3.mojepanstwo.pl/dane/poslowie/";
+    private static String urlAdd2 = ".json?layers[]=wyjazdy";
 
-    public List<Deputy> getDeputiesInItaly(){
-        return this.deputiesInItaly;
+    JsonTrips(Deputy deputy){
+        this.deputy = deputy;
     }
 
-    public JsonTrips getTripsInfo(Parliament parliament) throws IOException{
+
+    /*public JsonTrips getTripsInfo(Parliament parliament) throws IOException{
 
         for(Deputy d : parliament.getCadenceDeputiesList()){
-            d.setTrips(getDeputyTrip(d));
+            d.setTrips(getDeputyTrip());
         }
         return this;
+    }*/
+    @Override
+    public void run(){
+        getDeputyTrip();
     }
 
-    private Trips getDeputyTrip(Deputy deputy) throws IOException {
+    private void getDeputyTrip(){
+        int id = this.deputy.getId();
         try {
-            int id = deputy.getId();
-
-            URL url = new URL("https://api-v3.mojepanstwo.pl/dane/poslowie/" + id + ".json?layers[]=wyjazdy");
+            URL url = new URL(urlAdd + id + urlAdd2);
             InputStream inputStream = url.openStream();
             JsonReader jsonReader = Json.createReader(inputStream);
             JsonObject jsonTripsObject = jsonReader.readObject();
@@ -43,14 +49,18 @@ public class JsonTrips {
             int tripsCount = jsonTripsObject.getJsonObject("data").getJsonNumber("poslowie.liczba_wyjazdow").intValue();
 
 
-            if (tripsCount == 0 || cost == 0.0)
-                return new Trips(0.0, tripsCount, 0);
+            if (tripsCount == 0 || cost == 0.0) {
+                this.deputy.setTrips(new Trips(0.0, tripsCount, 0));
+                return;
+            }
 
             JsonObject layersObject = jsonTripsObject.getJsonObject("layers");
             JsonArray tripsArray = layersObject.getJsonArray("wyjazdy");
+
             Double expensiveTripCost = 0.0;
             int days = 0;
             int k = 0;
+            boolean beenInItaly = false;
             for (int i = 0; i < tripsArray.size(); i++) {
                 days += Integer.valueOf(tripsArray.getJsonObject(i).getString("liczba_dni"));
                 if (Double.valueOf(tripsArray.getJsonObject(i).getString("koszt_suma")) > expensiveTripCost)
@@ -58,17 +68,20 @@ public class JsonTrips {
 
                 if (k == 0 && tripsArray.getJsonObject(i).getString("kraj").equals("Włochy")) {
                     k++;
-                    this.deputiesInItaly.add(deputy);
+                    beenInItaly = true;
                 }
             }
 
             inputStream.close();
-            return new Trips(expensiveTripCost, tripsCount, days);
+            this.deputy.setTrips(new Trips(expensiveTripCost, tripsCount, days, beenInItaly));
         } catch (ClassCastException e){
-            System.out.println("This deputy " + deputy.getName() + " doesn't have 'wydatki' array!");
-            return new Trips(0.0, 0, 0);
+            System.out.println("This deputy " + deputy.getName() + " doesn't have 'wyjazdy' array!");
+            this.deputy.setTrips(new Trips(0.0, 0, 0));
+            //new JsonTrips(this.deputy).getDeputyTrip();
+
         } catch (IOException e) {
-            throw new IOException("blabla");
+            System.out.println(e.getMessage());
+            new JsonTrips(this.deputy).getDeputyTrip();
         }
     }
 }

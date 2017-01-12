@@ -9,11 +9,27 @@ public class Trips {
     private Double mostExpensiveTripCost = 0.0;
     private int tripsCount = 0;
     private int longestTripDaysCount = 0;
+    private boolean beenInItaly = false;
 
     Trips(Double tripsCost, int tripsCount, int days){
         this.mostExpensiveTripCost = tripsCost;
         this.tripsCount = tripsCount;
         this.longestTripDaysCount = days;
+    }
+
+    Trips(Double tripsCost, int tripsCount, int days, boolean beenInItaly){
+        this.mostExpensiveTripCost = tripsCost;
+        this.tripsCount = tripsCount;
+        this.longestTripDaysCount = days;
+        this.beenInItaly = beenInItaly;
+    }
+
+    public boolean hasBeenInItaly(){
+        return this.beenInItaly;
+    }
+
+    public void setBeenInItaly(boolean beenInItaly) {
+        this.beenInItaly = beenInItaly;
     }
 
     public Double getMostExpensiveTripsCost(){
