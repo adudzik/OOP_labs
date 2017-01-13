@@ -68,7 +68,10 @@ class JsonDeputy implements Runnable {
             JsonObject links = firstPage.getJsonObject("Links");
             String lastPage = links.getString("last");
 
-            result = lastPage.charAt(lastPage.length() - 1);
+            if((int) lastPage.charAt(lastPage.length() - 2) == 1)
+                result = (int) lastPage.charAt(lastPage.length() - 1) + ((int) lastPage.charAt(lastPage.length() - 2)) * 10;
+            else
+                result = (int) lastPage.charAt(lastPage.length() - 1);
 
         } catch (MalformedURLException err) {
             System.out.println("This is incorrect URL address " + address + cadenceCondition + cadenceNumber + pageCondition + 1);
