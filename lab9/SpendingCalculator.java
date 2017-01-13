@@ -103,7 +103,7 @@ class SpendingCalculator {
     private void setSingleDeputySpending(Parliament parliament, String deputyName) throws IOException {
         Deputy deputy = parliament.getDeputy(deputyName);
 
-        if (deputy.getName() == null)
+        if (deputy == null)
             throw new IllegalArgumentException("This deputy " + deputyName + " does not exist!");
 
         new JsonSpending(deputy).getDeputySpending();

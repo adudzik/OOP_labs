@@ -37,7 +37,7 @@ class OptionParser {
 
         do {
             if (!(result.findOption(args[i], i)))
-                throw new IllegalArgumentException("Find illegal option in this place: " + args[i]);
+                throw new IllegalArgumentException("Found illegal option in this place: " + args[i]);
             i++;
         } while (i < args.length);
 

@@ -77,7 +77,8 @@ class JsonDeputy implements Runnable {
             System.out.println("This is incorrect URL address " + address + cadenceCondition + cadenceNumber + pageCondition + 1);
             System.exit(0);
         } catch (IOException err) {
-            System.out.println("It'something wrong with this JSON " + address + cadenceCondition + cadenceNumber + pageCondition + 1);
+            System.out.println("It's something wrong with this JSON " + address + cadenceCondition + cadenceNumber + pageCondition + 1);
+            System.out.println("Check your Internet connection.");
             System.exit(0);
         }
         return result;
